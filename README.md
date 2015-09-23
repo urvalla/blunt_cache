@@ -1,5 +1,5 @@
 # BluntCache
-Simple in-memory cache service for ruby.
+Simple in-memory cache service for Ruby.
 
 ## Usage
 
@@ -30,7 +30,7 @@ Simple in-memory cache service for ruby.
 ## Why? When to use?
 
 * It is fast.
-* Use it when you don't want to execute seralization-deseralization cycle with real cache (Redis or Memcache).
+* Use it when you don't want to execute serialization-deserialization cycle with real cache (Redis or Memcache).
 * Use it when you not able (or don't want) to use external cache service (you or your admin are lazy, when using Heroku or other cloud services, etc).
 
 ## Limitations
