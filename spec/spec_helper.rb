@@ -1,1 +1,1 @@
-require 'blunt_cache'
+require 'blunt-cache'
