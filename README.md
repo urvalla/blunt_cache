@@ -2,32 +2,35 @@
 Simple in-memory cache service for Ruby.
 
 [![Build Status](https://travis-ci.org/appelsin/blunt_cache.svg?branch=master)](https://travis-ci.org/appelsin/blunt_cache)
+[![Code Climate](https://codeclimate.com/github/appelsin/blunt_cache/badges/gpa.svg)](https://codeclimate.com/github/appelsin/blunt_cache)
 
 ## Usage
 
-    # set/get by key
-    BluntCache.set "key", data
-    data = BluntCache.get "key"
+```ruby
+# set/get by key
+BluntCache.set "key", data
+data = BluntCache.get "key"
 
-    # executes block if not set or expired
-    data = BluntCache.fetch "key" do
-      do_something
-    end
+# executes block if not set or expired
+data = BluntCache.fetch "key" do
+  do_something
+end
 
-    # time to live can be provided (dafault is 60 sec)
-    BluntCache.set "key", expire: 120 data
-    BluntCache.fetch "key", expire: 120 do
-      do_something
-    end
+# time to live can be provided (dafault is 60 sec)
+BluntCache.set "key", expire: 120 data
+BluntCache.fetch "key", expire: 120 do
+  do_something
+end
 
-    # inherit it for namespacing and extending
-    class MyCache < BluntCache
-      @expire_default = 30
-    end
+# inherit it for namespacing and extending
+class MyCache < BluntCache
+  @expire_default = 30
+end
 
-    MyCache.set "1", "2"
-    BluntCache.set "1", "3"
-    MyCache.get "1" #2
+MyCache.set "1", "2"
+BluntCache.set "1", "3"
+MyCache.get "1" #2
+```
 
 ## Why? When to use?
 
