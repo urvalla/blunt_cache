@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = BluntCache::VERSION
   spec.authors       = ["Roman Exempliarov"]
   spec.email         = ["urvala@gmail.com"]
-  spec.summary       = %q{Simple in-memory cache service for ruby.}
-  spec.description   = %q{Simple in-memory cache service for ruby.}
+  spec.summary       = %q{Simple in-memory cache service for Ruby.}
+  spec.description   = %q{Simple in-memory cache service for Ruby.}
   spec.homepage      = "https://github.com/appelsin/blunt_cache"
   spec.license       = "MIT"
 

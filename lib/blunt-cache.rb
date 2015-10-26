@@ -3,7 +3,9 @@ class BluntCache
   @expire_default = 60
 
   # Store +data+ in cache by +key+ for +:expire+ seconds (default is 60 sec)
-  def self.set(key, data, expire: nil)
+  #   def self.set(key, data, expire: nil)
+  def self.set(key, data, options = {}, *args)
+    expire = options[:expire]
     self.timestamp[key] = Time.now + (expire || self.expire_default)
     self.data[key] = data
     data
@@ -15,10 +17,12 @@ class BluntCache
   end
 
   # Get +key+ from cache. Executes +block+, stores it's result and returns it if not set or expired.
-  def self.fetch(key, expire: nil, &block)
+  #   def self.fetch(key, expire: nil, &block)
+  def self.fetch(key, options = {}, &block)
+    expire = options[:expire]
     result = self.get key
     if result.nil?
-      self.set key, block.call, expire: expire
+      self.set key, block.call, :expire => expire
     else
       result
     end

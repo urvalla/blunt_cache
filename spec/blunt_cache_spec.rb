@@ -28,7 +28,7 @@ describe BluntCache do
       end
 
       it 'returns value before expiration and nil after expiration' do
-        expect { c.set("3", "3_val", expire: 0.1) }.not_to raise_error
+        expect { c.set("3", "3_val", :expire => 0.1) }.not_to raise_error
         result = nil
         expect { result = c.get("3") }.not_to raise_error
         expect(result).to eq "3_val"
@@ -52,7 +52,7 @@ describe BluntCache do
 
       it 'returns value before expiration and re-executes block after expiration (fetch)' do
         result = nil
-        expect { result = c.fetch "6", expire: 0.1 do "6_val" end }.not_to raise_error
+        expect { result = c.fetch "6", :expire => 0.1 do "6_val" end }.not_to raise_error
         expect(result).to eq "6_val"
         expect { result = c.fetch "6" do "6_val_2" end }.not_to raise_error
         expect(result).to eq "6_val"
