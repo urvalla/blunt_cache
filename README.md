@@ -1,6 +1,8 @@
 # BluntCache
 Simple in-memory cache service for Ruby.
 
+[![Build Status](https://travis-ci.org/appelsin/blunt_cache.svg?branch=master)](https://travis-ci.org/appelsin/blunt_cache)
+
 ## Usage
 
     # set/get by key
