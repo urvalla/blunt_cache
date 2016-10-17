@@ -4,7 +4,7 @@ class BluntCache
 
   # Store +data+ in cache by +key+ for +:expire+ seconds (default is 60 sec)
   #   def self.set(key, data, expire: nil)
-  def self.set(key, data, options = {}, *args)
+  def self.set(key, data, options = {})
     expire = options[:expire]
     self.timestamp[key] = Time.now + (expire || self.expire_default)
     self.data[key] = data
@@ -33,8 +33,6 @@ class BluntCache
     @data = {}
     @timestamp = {}
   end
-
-protected
 
   def self.data
     @data||= {}
