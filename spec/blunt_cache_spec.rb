@@ -57,7 +57,7 @@ describe BluntCache do
 
         it 'returns false after long sleep' do
           sleep(0.11)
-          expect(c.key?("k3")).to eq true
+          expect(c.key?("k3")).to eq false
         end
       end
 
