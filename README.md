@@ -16,11 +16,20 @@ data = BluntCache.fetch "key" do
   do_something
 end
 
-# time to live can be provided (dafault is 60 sec)
+# time to live can be provided (default is 60 sec)
 BluntCache.set "key", expire: 120 data
 BluntCache.fetch "key", expire: 120 do
   do_something
 end
+
+# checks if key exists
+BluntCache.key? "nil_key" # false
+BluntCache.set "nil_key", nil
+BluntCache.key? "nil_key" # true
+
+# doesn't re-executes nil fetches
+data = BluntCache.fetch("heavy_key") { sleep 1; nil } # some heavy block returning nil
+data = BluntCache.fetch("heavy_key") { sleep 1; nil } # doesn't re-executes if not expired
 
 # inherit it for namespacing and extending
 class MyCache < BluntCache

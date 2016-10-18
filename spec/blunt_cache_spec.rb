@@ -46,6 +46,31 @@ describe BluntCache do
         end
       end
 
+      context 'key?' do
+        before(:all) { c.set("k1", "k1_val") }
+
+        it { expect(c.key?("k1")).to eq true }
+        it 'returns false if not set' do
+          expect(c.key?("k2")).to eq false
+        end
+      end
+
+      context 'key? with expiration' do
+        before(:each) { c.set("k3", "k3_val", :expire => 0.1) }
+
+        it { expect(c.key?("k3")).to eq true }
+
+        it 'returns true after short sleep' do
+          sleep(0.09)
+          expect(c.key?("k3")).to eq true
+        end
+
+        it 'returns false after long sleep' do
+          sleep(0.11)
+          expect(c.key?("k3")).to eq false
+        end
+      end
+
       context 'fetch' do
         it 'executes block for a first time' do
           executed = :not_executed
@@ -92,6 +117,16 @@ describe BluntCache do
           sleep(0.11)
           expect(c.fetch("6-3", :expire => 0.1) { executed = :executed_second }).to eq :executed_second
           expect(executed).to eq :executed_second
+        end
+      end
+
+      context 'fetch with nil' do
+        it 'doesn\'t re-executes for nil value' do
+          execution_counter = 0
+          expect(c.fetch("nill") { execution_counter+= 1; nil }).to eq nil
+          expect(execution_counter).to eq 1
+          expect(c.fetch("nill") { execution_counter+= 1; nil }).to eq nil
+          expect(execution_counter).to eq 1
         end
       end
     end
