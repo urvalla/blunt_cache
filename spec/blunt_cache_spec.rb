@@ -11,54 +11,88 @@ describe BluntCache do
 
   [BluntCache, MyCache, ShortCache].each do |c|
     context '#{c.name}' do
-      it 'stores data' do
-        expect { c.set("1", "1_val") }.not_to raise_error
-        result = nil
-        expect { result = c.get("1") }.not_to raise_error
-        expect(result).to eq "1_val"
-        expect { c.set("1", "1_val_2") }.not_to raise_error
-        expect { result = c.get("1") }.not_to raise_error
-        expect(result).to eq "1_val_2"
+      context 'set' do
+        it { expect(c.set("1", "1_val")).to eq "1_val" }
       end
 
-      it 'returns nil on no data' do
-        result = "value"
-        expect { result = c.get("2") }.not_to raise_error
-        expect(result).to eq nil
+      context 'get' do
+        before(:all) { c.set("1", "1_val") }
+
+        it { expect(c.get("1")).to eq "1_val" }
+
+        it 'returns previous set value' do
+          c.set("1", "1_val_2")
+          expect(result = c.get("1")).to eq "1_val_2"
+        end
+
+        it 'returns nil if not set' do
+          expect(c.get("2")).to eq nil
+        end
       end
 
-      it 'returns value before expiration and nil after expiration' do
-        expect { c.set("3", "3_val", :expire => 0.1) }.not_to raise_error
-        result = nil
-        expect { result = c.get("3") }.not_to raise_error
-        expect(result).to eq "3_val"
-        sleep(0.09)
-        expect { result = c.get("3") }.not_to raise_error
-        expect(result).to eq "3_val"
-        sleep(0.02)
-        expect { result = c.get("3") }.not_to raise_error
-        expect(result).to eq nil
+      context 'get with expiration' do
+        before(:each) { c.set("3", "3_val", :expire => 0.1) }
+
+        it { expect(c.get("3")).to eq "3_val" }
+
+        it 'returns value after short sleep' do
+          sleep(0.09)
+          expect(c.get("3")).to eq "3_val"
+        end
+
+        it 'returns nil after long sleep' do
+          sleep(0.11)
+          expect(c.get("3")).to eq nil
+        end
       end
 
-      it 'evals block in fetch if cache not set' do
-        expect(c.get("4")).to eq nil
-        result = nil
-        expect { result = c.fetch("4") do "4_val" end }.not_to raise_error
-        expect(result).to eq "4_val"
-        expect(c.get("4")).to eq "4_val"
-        expect { result = c.fetch("4") do "4_val_2" end }.not_to raise_error
-        expect(result).to eq "4_val"
+      context 'fetch' do
+        it 'executes block for a first time' do
+          executed = :not_executed
+          expect(c.fetch("4-0") { executed = :executed }).to eq :executed
+          expect(executed).to eq :executed
+        end
+
+        it 'sets value from block' do
+          expect(c.get("4")).to eq nil #pre-check
+          expect(c.fetch("4") { "4_val" }).to eq "4_val"
+        end
+
+        it 'doesn\'t execute block for a second time' do
+          expect(c.fetch("4-1") { :executed_first }).to eq :executed_first
+          executed = :not_executed
+          expect(c.fetch("4-1") { executed = :executed_second }).to eq :executed_first
+          expect(executed).to eq :not_executed
+        end
       end
 
-      it 'returns value before expiration and re-executes block after expiration (fetch)' do
-        result = nil
-        expect { result = c.fetch "6", :expire => 0.1 do "6_val" end }.not_to raise_error
-        expect(result).to eq "6_val"
-        expect { result = c.fetch "6" do "6_val_2" end }.not_to raise_error
-        expect(result).to eq "6_val"
-        sleep(0.11)
-        expect { result = c.fetch "6" do "6_val_3" end }.not_to raise_error
-        expect(result).to eq "6_val_3"
+      context 'fetch with experation' do
+        it 'recieves :expire' do
+          expect( c.fetch("6", :expire => 0.1) { "6_val" } ).to eq "6_val"
+        end
+
+        it 'doesn\'t execute block for a second time' do
+          expect(c.fetch("6-1", :expire => 0.1) { :executed_first }).to eq :executed_first
+          executed = :not_executed
+          expect(c.fetch("6-1", :expire => 0.1) { executed = :executed_second }).to eq :executed_first
+          expect(executed).to eq :not_executed
+        end
+
+        it 'doesn\'t execute block for a second time after short sleep' do
+          expect(c.fetch("6-2", :expire => 0.1) { :executed_first }).to eq :executed_first
+          executed = :not_executed
+          sleep(0.09)
+          expect(c.fetch("6-2", :expire => 0.1) { executed = :executed_second }).to eq :executed_first
+          expect(executed).to eq :not_executed
+        end
+
+        it 'executes block for a second time after long sleep' do
+          expect(c.fetch("6-3", :expire => 0.1) { :executed_first }).to eq :executed_first
+          executed = :not_executed
+          sleep(0.11)
+          expect(c.fetch("6-3", :expire => 0.1) { executed = :executed_second }).to eq :executed_second
+          expect(executed).to eq :executed_second
+        end
       end
     end
   end
