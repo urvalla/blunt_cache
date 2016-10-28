@@ -17,7 +17,7 @@ data = BluntCache.fetch "key" do
 end
 
 # time to live can be provided (default is 60 sec)
-BluntCache.set "key", expire: 120 data
+BluntCache.set "key", data, expire: 120
 BluntCache.fetch "key", expire: 120 do
   do_something
 end
